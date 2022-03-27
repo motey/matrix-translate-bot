@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from .bot import TranslatorBot
 
 AutoTranslateConfig = NamedTuple("AutoTranslateConfig", main_language=str,
-                                 accepted_languages=Set[str])
+                                 accepted_languages=Set[str],detector=str)
 
 
 class TranslationProviderError(Exception):
