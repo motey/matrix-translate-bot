@@ -1,0 +1,63 @@
+# Bot account details
+user:
+  credentials:
+    id: "@translator-bot:matrix.my.org"
+    homeserver: https://matrix.my.org
+    access_token: <replace>
+    # If you want to enable encryption, set the device ID corresponding to the access token here.
+    device_id: null
+  # Enable /sync? This is not needed for purely unencrypted webhook-based bots, but is necessary in most other cases.
+  sync: true
+  # Automatically accept invites?
+  autojoin: true
+  # The displayname and avatar URL to set for the bot on startup.
+  # Set to "disable" to not change the the current displayname/avatar.
+  displayname: disable
+  avatar_url: mxc://maunium.net/AKwRzQkTbggfVZGEqexbYLIO
+
+  # Should events from the initial sync be ignored? This should usually always be true.
+  ignore_initial_sync: true
+  # Should events from the first sync after starting be ignored? This can be set to false
+  # if you want the bot to handle messages that were sent while the bot was down.
+  ignore_first_sync: true
+
+# The database for the plugin. Used for plugin data, the sync token and e2ee data (if enabled).
+# SQLite and Postgres are supported.
+database: sqlite:////data/bot.db
+
+# Config for the plugin. Refer to the plugin's base-config.yaml to find what (if anything) to put here.
+plugin_config: 
+  provider:
+    id: google
+    args: {}
+  auto_translate:
+    # room_id also supports regex. e.g. `^![A-Za-z0-9._%+-]+:matrix.my.org$` enables this auto_translate config on all channels on server "matrix.my.org" ending on `_ru_translator`
+    - room_id: "^![A-Za-z0-9._%+-]+_ru_translator:matrix.my.org$"
+      main_language: de
+      accepted_languages: [ru]
+  # Whether bot responses should use Matrix replies.
+  response_reply: true
+
+# Standard Python logging configuration
+logging:
+  version: 1
+  formatters:
+    colored:
+      (): maubot.lib.color_log.ColorFormatter
+      format: "[%(asctime)s] [%(levelname)s@%(name)s] %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: colored
+  loggers:
+    maubot:
+      level: DEBUG
+    mau:
+      level: DEBUG
+    aiohttp:
+      level: DEBUG
+    maubot.db:
+      level: DEBUG
+  root:
+    level: DEBUG
+    handlers: [console]
