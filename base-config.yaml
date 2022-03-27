@@ -6,5 +6,9 @@ auto_translate:
 - room_id: '!roomid:example.com'
   main_language: en
   accepted_languages: [fi]
+  # DETECTOR
+  # langid: https://pypi.org/project/langid/
+  # langdetect: https://pypi.org/project/langdetect/
+  detector: langid
 # Whether bot responses should use Matrix replies.
 response_reply: true

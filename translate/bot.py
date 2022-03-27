@@ -26,16 +26,34 @@ from .util import Config, LanguageCodePair, TranslationProviderError, AutoTransl
 
 try:
     import langdetect
-    from langdetect.lang_detect_exception import LangDetectException
 except ImportError:
     langdetect = None
     LangDetectException = None
-
-
+try:
+    import langid
+except ImportError:
+    langid = None
 class TranslatorBot(Plugin):
     translator: Optional[AbstractTranslationProvider]
     auto_translate: Dict[RoomID, AutoTranslateConfig]
     config: Config
+
+    def lang_detect(self,string,config):
+        langs = config.accepted_languages + [config.main_language]
+        if self.auto_translate["detector"] == "langid" and langid is not None:
+            langid.set_languages(langs)
+            return langid.classify(string)[0]
+        if self.auto_translate["detector"] == "langdetect" and langdetect is not None:
+            max_tries = 6
+            tries = 0
+            try_detecting = True
+            while try_detecting:
+                for res in langdetect.detect_langs(string):
+                    if res.lang in langs:
+                        return res.lang
+            if tries < max_tries:
+                try_detecting = False
+            tries += 1
 
     async def start(self) -> None:
         await super().start()
@@ -67,20 +85,11 @@ class TranslatorBot(Plugin):
                     atc = config
             return
 
-        def is_acceptable(lang: str) -> bool:
-            return lang == atc.main_language or lang in atc.accepted_languages
-
-        try:
-            if is_acceptable(langdetect.detect(evt.content.body)):
-                return
-        except LangDetectException:
-            return
-        result = await self.translator.translate(evt.content.body, to_lang=atc.main_language)
-        if is_acceptable(result.source_language) or result.text == evt.content.body:
-            return
-        await evt.respond(f"[{evt.sender}](https://matrix.to/#/{evt.sender}) said "
-                          f"(in {self.translator.get_language_name(result.source_language)}): "
-                          f"{result.text}")
+        lang = self.lang_detect(evt.content.body)
+        if lang:
+            for other_lang in [l for l in config.accepted_languages + [config.main_language] if l not in lang]:
+                string_in_other_lang = await self.translator.translate(evt.content.body,from_lang=lang, to_lang=other_lang)
+                await evt.reply(string_in_other_lang)
 
     @command.new("translate", aliases=["tr"])
     @LanguageCodePair("language", required=False)

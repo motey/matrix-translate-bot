@@ -55,7 +55,8 @@ class Config(BaseProxyConfig):
 
     def load_auto_translate(self) -> Dict[RoomID, AutoTranslateConfig]:
         atc = {value.get("room_id"): AutoTranslateConfig(value.get("main_language", "en"),
-                                                         set(value.get("accepted_languages", [])))
+                                                         set(value.get("accepted_languages", [])),
+                                                         value.get("detector","langid"))
                for value in self["auto_translate"] if "room_id" in value}
         return atc
 
