@@ -13,6 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import re
 from typing import Optional, Tuple, Type, Dict
 
 from mautrix.util.config import BaseProxyConfig
@@ -61,6 +62,9 @@ class TranslatorBot(Plugin):
         try:
             atc = self.auto_translate[evt.room_id]
         except KeyError:
+            for key,config in self.auto_translate.items():
+                if re.match(key, evt.room_id):
+                    atc = config
             return
 
         def is_acceptable(lang: str) -> bool:
