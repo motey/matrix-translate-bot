@@ -38,22 +38,29 @@ class TranslatorBot(Plugin):
     auto_translate: Dict[RoomID, AutoTranslateConfig]
     config: Config
 
-    def lang_detect(self,string,config):
-        langs = config.accepted_languages + [config.main_language]
-        if self.auto_translate["detector"] == "langid" and langid is not None:
+    def lang_detect(self,string:str,config:AutoTranslateConfig):
+        langs = config.accepted_languages | {config.main_language}
+        self.log.debug(f"langs: {langs}")
+        if config.detector == "langid" and langid is not None:
             langid.set_languages(langs)
-            return langid.classify(string)[0]
-        if self.auto_translate["detector"] == "langdetect" and langdetect is not None:
+            detected_lang = langid.classify(string)[0]
+            self.log.debug(f"Detected language via langid: '{detected_lang}'")
+            return detected_lang
+        elif config.detector == "langdetect" and langdetect is not None:
             max_tries = 6
             tries = 0
             try_detecting = True
             while try_detecting:
                 for res in langdetect.detect_langs(string):
+                    self.log.debug(res)
                     if res.lang in langs:
+                        self.log.debug(f"Detected language via langdetect: '{res.lang}'")
                         return res.lang
-            if tries < max_tries:
-                try_detecting = False
-            tries += 1
+                if tries > max_tries:
+                    try_detecting = False
+                tries += 1
+        else:
+            self.log.warn(f"Unkown language detector. Expected 'langid' or 'langdetect' got '{config.detector}'")
 
     async def start(self) -> None:
         await super().start()
@@ -74,7 +81,7 @@ class TranslatorBot(Plugin):
 
     @event.on(EventType.ROOM_MESSAGE)
     async def event_handler(self, evt: MessageEvent) -> None:
-        if (langdetect is None or evt.content.msgtype == MessageType.NOTICE
+        if (evt.content.msgtype == MessageType.NOTICE
                 or evt.sender == self.client.mxid):
             return
         try:
@@ -83,13 +90,17 @@ class TranslatorBot(Plugin):
             for key,config in self.auto_translate.items():
                 if re.match(key, evt.room_id):
                     atc = config
-            return
+            if not atc:
+                return
 
-        lang = self.lang_detect(evt.content.body)
+        lang = self.lang_detect(evt.content.body,atc)
         if lang:
-            for other_lang in [l for l in config.accepted_languages + [config.main_language] if l not in lang]:
+            langs = config.accepted_languages | {config.main_language}
+            other_langs = {l for l in langs if l not in lang}
+            for other_lang in other_langs:
                 string_in_other_lang = await self.translator.translate(evt.content.body,from_lang=lang, to_lang=other_lang)
-                await evt.reply(string_in_other_lang)
+                prefix = "**" + other_lang + "**: "
+                await evt.reply(f"{prefix if len(other_langs) > 1 else ''}{string_in_other_lang.text}")
 
     @command.new("translate", aliases=["tr"])
     @LanguageCodePair("language", required=False)
