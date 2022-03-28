@@ -27,7 +27,7 @@ In comparison too the upstream repo this bot has a auto-translation based on reg
 
 `git clone git@github.com:motey/matrix-translate-bot.git` 
 
-`cd translate`
+`cd matrix-translate-bot`
 
 `docker-compose up`
 
