@@ -8,9 +8,9 @@ In comparison too the upstream repo this bot has a auto-translation based on reg
 
 - [translate](#translate)
 - [Setup](#setup)
-  - [requirements](#requirements)
+  - [Requirements](#requirements)
   - [Install](#install)
-  - [Enable end 2 end encription](#enable-end-2-end-encription)
+  - [Enable end2end-encryption](#enable-end2end-encryption)
 - [Start](#start)
 - [Usage](#usage)
   - [Command mode](#command-mode)
@@ -18,7 +18,7 @@ In comparison too the upstream repo this bot has a auto-translation based on reg
 
 # Setup
 
-## requirements
+## Requirements
 
 * A running matrix server with a user account for the bot
 
@@ -34,7 +34,7 @@ wait until you get the message `Please modify the config file to your liking and
 
 edit `./_state/config/config.yaml` to your configuration. See next chapter to enable encription
 
-## Enable end 2 end encription
+## Enable end2end-encryption
 
 To enable e2ee for your bot you need to set `user.credentials.access_token` and `user.credentials.device_id` in your `config.yaml`.  
 The easist way for me to obtain these was via curl:
@@ -85,5 +85,6 @@ replied to.
 ## Auto mode
 
 Configure `plugin_config.auto_translate` in `config.yaml` to match the room(s) you want auto-tranlate to be enabled. You can also enter a regex match pattern to enable auto-translate to a whole class of rooms or certain domains, or whatever you need.  
+
 You still need to invite the bot manualy into the room(s).  
 After that the bot will try to detect the language of every message (based on the enabled languages in `plugin_config.auto_translate`) and will translate it to every other language configured in `plugin_config.auto_translate`
