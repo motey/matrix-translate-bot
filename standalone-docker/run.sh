@@ -8,7 +8,7 @@ cd /opt/maubot/
 
 if [ ! -f /config/config.yaml ]; then
     cp /template/config.yaml /config/config.yaml
-    echo "Config file not found. Example config copied to /config/config.yaml"
+    echo "Config file not found. Example config copied to /data/config.yaml"
     echo "Please modify the config file to your liking and restart the container."
     fixperms
     exit

@@ -1,11 +1,12 @@
 # Bot account details
 user:
   credentials:
-    id: "@translator-bot:matrix.my.org"
-    homeserver: https://matrix.my.org
-    access_token: <replace>
+    id: "@translator-bot:matrix.mydomain.org"
+    homeserver: https://matrix.mydomain.org
+    access_token: foo
     # If you want to enable encryption, set the device ID corresponding to the access token here.
     device_id: null
+
   # Enable /sync? This is not needed for purely unencrypted webhook-based bots, but is necessary in most other cases.
   sync: true
   # Automatically accept invites?
@@ -21,22 +22,39 @@ user:
   # if you want the bot to handle messages that were sent while the bot was down.
   ignore_first_sync: true
 
+# Known homeservers. This is required for the `mbc auth` command and also allows
+# more convenient access from the management UI. This is not required to create
+# clients in the management UI, since you can also just type the homeserver URL
+# into the box there.
+homeservers:
+  matrix.mydomain.org:
+    # Client-server API URL
+    url: https://matrix.mydomain.org
+    # registration_shared_secret from synapse config
+    # You can leave this empty if you don't have access to the homeserver.
+    # When this is empty, `mbc auth --register` won't work, but `mbc auth` (login) will.
+    secret: ""
+
 # The database for the plugin. Used for plugin data, the sync token and e2ee data (if enabled).
 # SQLite and Postgres are supported.
 database: sqlite:////data/bot.db
 
 # Config for the plugin. Refer to the plugin's base-config.yaml to find what (if anything) to put here.
-plugin_config: 
+plugin_config:
   provider:
     id: google
     args: {}
   auto_translate:
     # room_id also supports regex. e.g. `^![A-Za-z0-9._%+-]+:matrix.my.org$` enables this auto_translate config on all channels on server "matrix.my.org" ending on `_ru_translator`
-    - room_id: "^![A-Za-z0-9._%+-]+_ru_translator:matrix.my.org$"
+    - room_id: ^![A-Za-z0-9._%+-]+:matrix.mydomain.org$
       main_language: de
       accepted_languages: [ru]
+      # which python language detector should be used.
+      # possible values
+      # 'langid' -> https://pypi.org/project/langid/ - worked best for me
+      # 'langdetect' -> https://pypi.org/project/langdetect/
+      # DEFAULT: langid
       detector: langid
-  # Whether bot responses should use Matrix replies.
   response_reply: true
 
 # Standard Python logging configuration

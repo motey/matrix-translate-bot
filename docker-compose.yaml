@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  matrix-translate-bot:
+    image: motey/maubot-translator-standalone:latest
+    restart: always
+    #environment:
+    # if you need certain ownerships if the files you can configure these here. 
+    # Default GID and UID will be 1337
+    #  - UID=${USER_ID}
+    #  - GID=${GROUP_ID}
+    volumes:
+      - ./_state/data:/data
+      - ./_state/config:/config
