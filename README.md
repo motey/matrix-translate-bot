@@ -5,6 +5,17 @@ In comparison too the upstream repo this bot has a auto-translation based on reg
 
 **WARNING**: this bot sends every message to the google translation API. You chat will not be secret anymore in spite of e2ee enabled in your chat room.
 
+
+- [translate](#translate)
+- [Setup](#setup)
+  - [requirements](#requirements)
+  - [Install](#install)
+  - [Enable end 2 end encription](#enable-end-2-end-encription)
+- [Start](#start)
+- [Usage](#usage)
+  - [Command mode](#command-mode)
+  - [Auto mode](#auto-mode)
+
 # Setup
 
 ## requirements
