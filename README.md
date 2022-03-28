@@ -15,6 +15,7 @@ In comparison too the upstream repo this bot has a auto-translation based on reg
 - [Usage](#usage)
   - [Command mode](#command-mode)
   - [Auto mode](#auto-mode)
+  - [ToDo/Planned](#todoplanned)
 
 # Setup
 
@@ -88,3 +89,8 @@ Configure `plugin_config.auto_translate` in `config.yaml` to match the room(s) y
 
 You still need to invite the bot manualy into the room(s).  
 After that the bot will try to detect the language of every message (based on the enabled languages in `plugin_config.auto_translate`) and will translate it to every other language configured in `plugin_config.auto_translate`
+
+
+## ToDo/Planned
+
+* Enable auto-translate for a room via command
